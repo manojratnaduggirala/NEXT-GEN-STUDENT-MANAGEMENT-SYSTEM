@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+
+{% block navbar %}
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">Course List</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'dashboard' %}">Dashboard <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Students</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Courses</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Attendance</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Exams</a>
+                </li>
+                 <li class="nav-item">
+                    <a class="nav-link" href="#">Tasks</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Events</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Certifications</a>
+                </li>
+                </ul>
+             <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+{% endblock %}
+
+{% block content %}
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Available Courses</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+        <style>
+            body {
+                transition: background-color 0.3s, color 0.3s;
+            }
+
+            .dark-mode {
+                background-color: #121212;
+                color: white;
+            }
+
+            .navbar-nav .nav-link {
+                transition: 0.3s;
+            }
+
+            .navbar-nav .nav-link:hover, .navbar-nav .nav-link.active {
+                color: #f8d210 !important;
+                font-weight: bold;
+            }
+
+            .profile-dropdown {
+                position: absolute;
+                right: 10px;
+            }
+
+            .dark-mode .navbar {
+                background-color: #222 !important;
+            }
+
+            .dark-mode .dropdown-menu {
+                background-color: #222;
+                color: white;
+            }
+
+            .dark-mode .dropdown-item {
+                color: white;
+            }
+
+            .dark-mode .dropdown-item:hover {
+                background-color: #333;
+            }
+        </style>
+    </head>
+    <body>
+
+    <div class="container">
+        <h2 class="text-center my-4">Available Courses</h2>
+
+        <div class="d-flex justify-content-between mb-3">
+            <input type="text" id="searchInput" class="form-control w-50" placeholder="Search courses..." onkeyup="filterCourses()">
+
+            <select id="filterSelect" class="form-control w-25" onchange="filterCourses()">
+                <option value="">All Courses</option>
+                {% for course in courses %}
+                    <option value="{{ course.skills_required }}">{{ course.skills_required }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="row">
+            {% for course in courses %}
+            <div class="col-md-4 mb-4 course-card" data-skills="{{ course.skills_required }}" data-name="{{ course.name }}">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ course.name }}</h5>
+                        <p class="card-text">{{ course.description|truncatechars:100 }}</p>
+                        <p><strong>Skills Required:</strong> {{ course.skills_required }}</p>
+                        <a href="{% url 'course_detail' course.id %}" class="btn btn-primary">View Course</a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-center">No courses available.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+    function filterCourses() {
+        let searchInput = document.getElementById("searchInput").value.toLowerCase();
+        let filterValue = document.getElementById("filterSelect").value.toLowerCase();
+        let courses = document.querySelectorAll(".course-card");
+
+        courses.forEach(course => {
+            let courseName = course.getAttribute("data-name").toLowerCase();
+            let skills = course.getAttribute("data-skills").toLowerCase();
+
+            if ((courseName.includes(searchInput) || searchInput === "") &&
+                (skills.includes(filterValue) || filterValue === "")) {
+                course.style.display = "block";
+            } else {
+                course.style.display = "none";
+            }
+        });
+    }
+    </script>
+
+    </body>
+    </html>
+{% endblock %}

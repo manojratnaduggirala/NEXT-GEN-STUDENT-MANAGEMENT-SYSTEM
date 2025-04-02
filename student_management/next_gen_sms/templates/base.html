@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Next-Gen Student Management System</title>
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+
+    <style>
+        body {
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .dark-mode {
+            background-color: #121212;
+            color: white;
+        }
+        .navbar-nav .nav-link {
+            transition: 0.3s;
+        }
+        .navbar-nav .nav-link:hover, .navbar-nav .nav-link.active {
+            color: #f8d210 !important;
+            font-weight: bold;
+        }
+        .profile-dropdown {
+            position: absolute;
+            right: 10px;
+        }
+        .dark-mode .navbar {
+            background-color: #222 !important;
+        }
+        .dark-mode .dropdown-menu {
+            background-color: #222;
+            color: white;
+        }
+        .dark-mode .dropdown-item {
+            color: white;
+        }
+        .dark-mode .dropdown-item:hover {
+            background-color: #333;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand" href="{% url 'dashboard' %}">Next-Gen Student Management System</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'manage_tasks' %}">Tasks</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'events_list' %}">Events</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'marks_overview' %}">Marks</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'attendance_overview' %}">Attendance</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'upload_certification' %}">Certifications</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'settings' %}">Settings</a></li>
+
+                <!-- Profile Dropdown -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-person-circle"></i> Profile
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                        <li><a class="dropdown-item" href="{% url 'profile' %}">View Profile</a></li>
+                        <li><a class="dropdown-item" href="{% url 'settings' %}">Settings</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <form action="{% url 'logout' %}" method="post">
+                                {% csrf_token %}
+                                <button type="submit" class="dropdown-item text-danger">Logout</button>
+                            </form>
+                        </li>
+                    </ul>
+                </li>
+
+                <!-- Dark Mode Toggle -->
+                <li class="nav-item">
+                    <button class="btn btn-outline-light ms-2" id="darkModeToggle"><i class="bi bi-moon-stars-fill"></i></button>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Attendance & Date Section -->
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-6">
+            <h3 class="text-primary">
+                Attendance: {% if attendance_percentage is not None %} 
+                    {{ attendance_percentage }}% 
+                {% else %} 
+                    Data not available 
+                {% endif %}
+            </h3>
+        </div>
+        <div class="col-md-6 text-end">
+            <h5 class="text-secondary">📅 {{ today_date }}</h5>
+        </div>
+    </div>
+
+    <!-- Messages -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show mt-3" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    {% block content %} {% endblock %}
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // Dark Mode Toggle with Local Storage
+    document.addEventListener("DOMContentLoaded", () => {
+        const darkModeToggle = document.getElementById("darkModeToggle");
+        const body = document.body;
+
+        const enableDarkMode = () => {
+            body.classList.add("dark-mode");
+            localStorage.setItem("darkMode", "enabled");
+            darkModeToggle.innerHTML = '<i class="bi bi-sun-fill"></i>';
+        };
+
+        const disableDarkMode = () => {
+            body.classList.remove("dark-mode");
+            localStorage.setItem("darkMode", "disabled");
+            darkModeToggle.innerHTML = '<i class="bi bi-moon-stars-fill"></i>';
+        };
+
+        if (localStorage.getItem("darkMode") === "enabled") {
+            enableDarkMode();
+        }
+
+        darkModeToggle.addEventListener("click", () => {
+            if (body.classList.contains("dark-mode")) {
+                disableDarkMode();
+            } else {
+                enableDarkMode();
+            }
+        });
+
+        // Highlight Active Navbar Link
+        document.querySelectorAll('.nav-link').forEach(link => {
+            if (link.href === window.location.href) {
+                link.classList.add('active');
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

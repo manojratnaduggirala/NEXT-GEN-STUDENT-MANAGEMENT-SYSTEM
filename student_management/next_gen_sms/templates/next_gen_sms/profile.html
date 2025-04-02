@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+
+{% block navbar %}
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">Profile</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'dashboard' %}">Dashboard <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Students</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Courses</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Attendance</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Exams</a>
+                </li>
+                 <li class="nav-item">
+                    <a class="nav-link" href="#">Tasks</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Events</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Certifications</a>
+                </li>
+                </ul>
+             <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+{% endblock %}
+
+{% block content %}
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>User Profile</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+        <style>
+            body {
+                transition: background-color 0.3s, color 0.3s;
+            }
+            .dark-mode {
+                background-color: #121212;
+                color: white;
+            }
+            .navbar-nav .nav-link {
+                transition: 0.3s;
+            }
+            .navbar-nav .nav-link:hover, .navbar-nav .nav-link.active {
+                color: #f8d210 !important;
+                font-weight: bold;
+            }
+            .profile-dropdown {
+                position: absolute;
+                right: 10px;
+            }
+            .dark-mode .navbar {
+                background-color: #222 !important;
+            }
+            .dark-mode .dropdown-menu {
+                background-color: #222;
+                color: white;
+            }
+            .dark-mode .dropdown-item {
+                color: white;
+            }
+            .dark-mode .dropdown-item:hover {
+                background-color: #333;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container mt-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="card shadow-lg p-4 rounded-lg">
+                        <div class="row">
+                            <div class="col-md-4 text-center">
+                                <img src="{{ user.profile_image.url|default:'/static/images/default-avatar.png' }}"
+                                     class="rounded-circle img-fluid border"
+                                     style="width: 150px; height: 150px; object-fit: cover;"
+                                     alt="Profile Picture">
+                                <h4 class="mt-3">{{ user.username }}</h4>
+                                <p class="text-muted">{{ user.role|title }}</p>
+                            </div>
+                            <div class="col-md-8">
+                                <h3 class="text-primary">👤 User Profile</h3>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <p><strong>📧 Email:</strong> {{ user.email }}</p>
+                                        <p><strong>📍 Location:</strong> {{ user.location|default:'Not provided' }}</p>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <p><strong>📅 Joined:</strong> {{ user.date_joined|date:"F d, Y" }}</p>
+                                        <p><strong>🔗 Social Links:</strong>
+                                            <a href="{{ user.linkedin|default:'#' }}" target="_blank">LinkedIn</a> |
+                                            <a href="{{ user.github|default:'#' }}" target="_blank">GitHub</a>
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="mt-3">
+                                    <a href="{% url 'edit_profile' %}" class="btn btn-warning btn-sm">✏️ Edit Profile</a>
+                                    <a href="{% url 'settings' %}" class="btn btn-secondary btn-sm">⚙️ Settings</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card shadow-lg mt-4 p-4 rounded-lg">
+                        <h3 class="text-success">🏆 Achievements & Activities</h3>
+                        <hr>
+                        <ul class="list-group">
+                            <li class="list-group-item">✅ Completed <strong>Cybersecurity Internship</strong> at TCS</li>
+                            <li class="list-group-item">📜 Earned <strong>Google Ads Certification</strong></li>
+                            <li class="list-group-item">💡 Developed <strong>Student Management System</strong> using Django</li>
+                            <li class="list-group-item">🌍 Active <strong>NSS Volunteer</strong></li>
+                        </ul>
+                    </div>
+                    <div class="card shadow-lg mt-4 p-4 rounded-lg">
+                        <h3 class="text-info">📅 Recent Activities</h3>
+                        <hr>
+                        <ul class="list-group">
+                            <li class="list-group-item">📝 Published a blog on <strong>SEO Strategies</strong></li>
+                            <li class="list-group-item">🔧 Built a <strong>Power BI Dashboard</strong> for data visualization</li>
+                            <li class="list-group-item">🎤 Hosted a <strong>Digital Marketing Webinar</strong></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
+    </html>
+{% endblock %}

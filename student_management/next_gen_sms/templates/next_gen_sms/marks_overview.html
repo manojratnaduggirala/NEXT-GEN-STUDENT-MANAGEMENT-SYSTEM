@@ -1,0 +1,184 @@
+{% extends 'base.html' %}
+
+{% block navbar %}
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">Marks Overview</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'dashboard' %}">Dashboard <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Students</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Courses</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Attendance</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Exams</a>
+                </li>
+                 <li class="nav-item">
+                    <a class="nav-link" href="#">Tasks</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Events</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Certifications</a>
+                </li>
+                </ul>
+             <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+{% endblock %}
+
+{% block content %}
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Marks Overview</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+        <style>
+            body {
+                transition: background-color 0.3s, color 0.3s;
+            }
+
+            .dark-mode {
+                background-color: #121212;
+                color: white;
+            }
+
+            .navbar-nav .nav-link {
+                transition: 0.3s;
+            }
+
+            .navbar-nav .nav-link:hover, .navbar-nav .nav-link.active {
+                color: #f8d210 !important;
+                font-weight: bold;
+            }
+
+            .profile-dropdown {
+                position: absolute;
+                right: 10px;
+            }
+
+            .dark-mode .navbar {
+                background-color: #222 !important;
+            }
+
+            .dark-mode .dropdown-menu {
+                background-color: #222;
+                color: white;
+            }
+
+            .dark-mode .dropdown-item {
+                color: white;
+            }
+
+            .dark-mode .dropdown-item:hover {
+                background-color: #333;
+            }
+        </style>
+    </head>
+    <body>
+
+    <div class="container mt-4">
+        <div class="card shadow-lg p-4">
+            <h2 class="text-center text-primary">📊 Marks Overview</h2>
+
+            {% if marks %}
+                <table class="table table-hover mt-3">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>🎯 Subject</th>
+                            <th>📅 Semester</th>
+                            <th>📖 Year</th>
+                            <th>🏆 Marks</th>
+                            <th>📊 Percentage</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for mark in marks %}
+                            <tr>
+                                <td>{{ mark.subject }}</td>
+                                <td>Semester {{ mark.semester }}</td>
+                                <td>Year {{ mark.year }}</td>
+                                <td><strong>{{ mark.marks }}</strong> / {{ mark.total_marks }}</td>
+                                <td>
+                                    <div class="progress">
+                                        <div class="progress-bar
+                                            {% if mark.percentage > 75 %} bg-success {% endif %}
+                                            {% if mark.percentage > 50 and mark.percentage <= 75 %} bg-warning {% endif %}
+                                            {% if mark.percentage <= 50 %} bg-danger {% endif %}
+                                            width-{{ mark.percentage }}"
+                                            role="progressbar"
+                                            aria-valuenow="{{ mark.percentage }}"
+                                            aria-valuemin="0"
+                                            aria-valuemax="100">
+                                            {{ mark.percentage }}%
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <canvas id="marksChart" class="mt-4"></canvas>
+
+            {% else %}
+                <p class="text-muted text-center">No marks available yet. Keep learning! 📚</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const marksData = JSON.parse(document.getElementById('marks-data').textContent);
+            const ctx = document.getElementById('marksChart').getContext('2d');
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: marksData.subjects,
+                    datasets: [{
+                        label: 'Marks',
+                        data: marksData.marks,
+                        backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+        });
+    </script>
+
+    <script type="application/json" id="marks-data">
+        {{ marks_json|safe }}
+    </script>
+
+    </body>
+    </html>
+{% endblock %}
