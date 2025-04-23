@@ -1,216 +1,93 @@
 {% extends 'base.html' %}
 
 {% block navbar %}
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <a class="navbar-brand" href="#">Attendance Overview</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{% url 'next_gen_sms:attendance_overview' %}">Attendance Overview</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
-                <li class="nav-item active">
-                    <a class="nav-link" href="{% url 'dashboard' %}">Dashboard <span class="sr-only">(current)</span></a>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Students</a>
+                    <a class="nav-link" href="{% url 'next_gen_sms:student_dashboard' %}">Students</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Courses</a>
+                    <a class="nav-link" href="{% url 'next_gen_sms:course_list' %}">Courses</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Attendance</a>
+                    <a class="nav-link active" href="{% url 'next_gen_sms:attendance_overview' %}">Attendance</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Exams</a>
-                </li>
-                 <li class="nav-item">
-                    <a class="nav-link" href="#">Tasks</a>
+                    <a class="nav-link" href="{% url 'next_gen_sms:marks_overview' %}">Exams</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Events</a>
+                    <a class="nav-link" href="{% url 'next_gen_sms:manage_tasks' %}">Tasks</a>
                 </li>
-                </ul>
-             <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'next_gen_sms:events_list' %}">Events</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'next_gen_sms:certifications_view' %}">Certifications</a>
+                </li>
+            </ul>
+            <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'logout' %}">Logout</a>
                 </li>
             </ul>
         </div>
-    </nav>
+    </div>
+</nav>
 {% endblock %}
 
 {% block content %}
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Attendance Overview</title>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
-
-        <style>
-            body {
-                transition: background-color 0.3s, color 0.3s;
-            }
-
-            .dark-mode {
-                background-color: #121212;
-                color: white;
-            }
-
-            .navbar-nav .nav-link {
-                transition: 0.3s;
-            }
-
-            .navbar-nav .nav-link:hover, .navbar-nav .nav-link.active {
-                color: #f8d210 !important;
-                font-weight: bold;
-            }
-
-            .profile-dropdown {
-                position: absolute;
-                right: 10px;
-            }
-
-            .dark-mode .navbar {
-                background-color: #222 !important;
-            }
-
-            .dark-mode .dropdown-menu {
-                background-color: #222;
-                color: white;
-            }
-
-            .dark-mode .dropdown-item {
-                color: white;
-            }
-
-            .dark-mode .dropdown-item:hover {
-                background-color: #333;
-            }
-        </style>
-    </head>
-    <body>
-
-    <div class="container mt-4">
-        <div class="card shadow-lg p-4">
-            <h2 class="text-center text-primary">📊 Attendance Overview</h2>
-
-            <div class="row text-center mt-3">
-                <div class="col-md-4">
-                    <h4 class="text-success">✅ Present Days</h4>
-                    <p class="fs-3">{{ present_count }}</p>
-                </div>
-                <div class="col-md-4">
-                    <h4 class="text-danger">❌ Absent Days</h4>
-                    <p class="fs-3">{{ absent_count }}</p>
-                </div>
-                <div class="col-md-4">
-                    <h4 class="text-warning">📈 Attendance %</h4>
-                    <p class="fs-3">{{ attendance_percentage }}%</p>
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <div class="d-flex justify-content-between align-items-center">
+                <h3>Attendance Records</h3>
+                <div>
+                    <a href="{% url 'next_gen_sms:attendance_create' %}" class="btn btn-success btn-sm">Add Record</a>
                 </div>
             </div>
-
-            <div class="progress">
-                <div class="progress-bar
-                    {% if attendance_percentage > 75 %} bg-success {% endif %}
-                    {% if attendance_percentage > 50 and attendance_percentage <= 75 %} bg-warning {% endif %}
-                    {% if attendance_percentage <= 50 %} bg-danger {% endif %}
-                    width-{{ attendance_percentage }}"
-                    role="progressbar"
-                    aria-valuenow="{{ attendance_percentage }}"
-                    aria-valuemin="0"
-                    aria-valuemax="100">
-                    {{ attendance_percentage }}%
-                </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Course</th>
+                            <th>Present</th>
+                            <th>Absent</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for record in attendance_records %}
+                        <tr>
+                            <td>{{ record.date|date:"Y-m-d" }}</td>
+                            <td>{{ record.course }}</td>
+                            <td>{{ record.present_count }}</td>
+                            <td>{{ record.absent_count }}</td>
+                            <td>
+                                <a href="{% url 'next_gen_sms:attendance_detail' record.id %}" class="btn btn-sm btn-info">View</a>
+                                <a href="{% url 'next_gen_sms:attendance_edit' record.id %}" class="btn btn-sm btn-warning">Edit</a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center">No attendance records available</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
-
-            <canvas id="attendanceChart" class="mt-4"></canvas>
-
-            <canvas id="attendanceTrendChart" class="mt-4"></canvas>
-
-            <h3 class="mt-5">📅 Daily Attendance Records</h3>
-            <ul class="list-group mt-2">
-                {% for record in attendance_records %}
-                    <li class="list-group-item">
-                        <strong>{{ record.date }}</strong>
-                        {% if record.status %}
-                            <span class="badge bg-success">Present ✅</span>
-                        {% else %}
-                            <span class="badge bg-danger">Absent ❌</span>
-                        {% endif %}
-                    </li>
-                {% empty %}
-                    <p>No attendance records available.</p>
-                {% endfor %}
-            </ul>
         </div>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const attendanceData = JSON.parse(document.getElementById('attendance-data').textContent);
-
-            const ctx1 = document.getElementById('attendanceChart').getContext('2d');
-            new Chart(ctx1, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Present', 'Absent'],
-                    datasets: [{
-                        data: [attendanceData.present_count, attendanceData.absent_count],
-                        backgroundColor: ['#28a745', '#dc3545'],
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: { position: 'bottom' }
-                    }
-                }
-            });
-
-            const ctx2 = document.getElementById('attendanceTrendChart').getContext('2d');
-            new Chart(ctx2, {
-                type: 'line',
-                data: {
-                    labels: attendanceData.dates,
-                    datasets: [{
-                        label: 'Attendance',
-                        data: attendanceData.status,
-                        borderColor: '#007bff',
-                        backgroundColor: 'rgba(0, 123, 255, 0.2)',
-                        borderWidth: 2,
-                        fill: true
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: { beginAtZero: true }
-                    }
-                }
-            });
-        });
-    </script>
-
-    <script type="application/json" id="attendance-data">
-        {
-            "present_count": {{ present_count|default:0 }},
-            "absent_count": {{ absent_count|default:0 }},
-            "dates": {{ attendance_dates|safe }},
-            "status": {{ attendance_status|safe }}
-        }
-    </script>
-
-    </body>
-    </html>
+</div>
 {% endblock %}
-
-
-
-

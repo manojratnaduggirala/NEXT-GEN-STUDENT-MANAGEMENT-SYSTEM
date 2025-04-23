@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-header bg-primary text-white text-center rounded-top-4">
+                    <h4 class="mb-0"><i class="bi bi-journal-plus me-2"></i>Add Student Marks</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+                            <label for="student" class="form-label">Student</label>
+                            <select class="form-select" id="student" name="student" required>
+                                <option value="" disabled selected>Choose student</option>
+                                {% for student in students %}
+                                    <option value="{{ student.id }}">{{ student.get_full_name|default:student.username }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="subject" class="form-label">Subject</label>
+                            <input type="text" class="form-control" id="subject" name="subject" placeholder="Enter subject name" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="score" class="form-label">Score</label>
+                            <input type="number" class="form-control" id="score" name="score" min="0" max="100" placeholder="Enter marks out of 100" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="exam_name" class="form-label">Exam Name</label>
+                            <input type="text" class="form-control" id="exam_name" name="exam_name" placeholder="E.g., Mid Semester 1" required>
+                        </div>
+
+                        <div class="text-center mt-4">
+                            <button type="submit" class="btn btn-success px-4">
+                                <i class="bi bi-check-circle-fill me-2"></i>Submit
+                            </button>
+                            <a href="{% url 'next_gen_sms:marks_overview' %}" class="btn btn-outline-secondary px-4 ms-2">
+                                <i class="bi bi-x-circle me-2"></i>Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

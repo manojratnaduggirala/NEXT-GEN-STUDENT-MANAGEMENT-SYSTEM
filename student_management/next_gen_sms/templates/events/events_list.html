@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-4">
+    <h2>Events</h2>
+    
+    {% if request.user.is_admin %}
+    <div class="mb-3">
+        <a href="{% url 'next_gen_sms:add_event' %}" class="btn btn-primary">Add New Event</a>
+    </div>
+    {% endif %}
+
+    <div class="list-group">
+        {% for event in events %}
+        <div class="list-group-item">
+            <div class="d-flex justify-content-between">
+                <div>
+                    <h5>{{ event.title }}</h5>
+                    <p>{{ event.description }}</p>
+                    <small class="text-muted">{{ event.date }} at {{ event.time }}</small>
+                </div>
+                {% if request.user.is_admin %}
+                <div>
+                    <a href="{% url 'next_gen_sms:edit_event' event.id %}" class="btn btn-sm btn-outline-secondary">Edit</a>
+                    <a href="{% url 'next_gen_sms:delete_event' event.id %}" class="btn btn-sm btn-outline-danger">Delete</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% empty %}
+        <div class="alert alert-info">No events scheduled yet.</div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

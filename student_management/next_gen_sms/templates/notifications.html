@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block navbar %}
+    {% include 'includes/navbar.html' %}
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="card border-0 shadow rounded-4 p-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="text-primary fw-bold">🔔 Notifications</h2>
+            <span class="badge bg-primary rounded-pill">{{ unread_count }} unread</span>
+        </div>
+
+        {% if notifications %}
+        <div class="list-group">
+            {% for notification in notifications %}
+            <a href="{% url 'next_gen_sms:mark_notification_read' notification.id %}" 
+               class="list-group-item list-group-item-action {% if not notification.is_read %}list-group-item-primary{% endif %}">
+                <div class="d-flex w-100 justify-content-between">
+                    <h6 class="mb-1">{{ notification.message }}</h6>
+                    <small>{{ notification.timestamp|timesince }} ago</small>
+                </div>
+                <small class="text-muted">From: {{ notification.created_by.username }}</small>
+            </a>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center text-muted py-4">
+            <p>No notifications yet</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

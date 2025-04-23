@@ -1,0 +1,189 @@
+{% extends 'base.html' %}
+
+{% block navbar %}
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">Certifications</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'dashboard' %}">Dashboard <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'next_gen_sms:student_dashboard' %}">Students</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'next_gen_sms:course_list' %}">Courses</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'attendance_overview' %}">Attendance</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'next_gen_sms:marks_overview' %}">Exams</a>
+                </li>
+                 <li class="nav-item">
+                    <a class="nav-link" href="{% url 'next_gen_sms:manage_tasks' %}">Tasks</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'next_gen_sms:events_list' %}">Events</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'next_gen_sms:certifications_view' %}">Certifications</a>
+                </li>
+                </ul>
+             <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+{% endblock %}
+
+{% block content %}
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Certifications</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+        <style>
+            body {
+                transition: background-color 0.3s, color 0.3s;
+            }
+
+            .dark-mode {
+                background-color: #121212;
+                color: white;
+            }
+
+            .navbar-nav .nav-link {
+                transition: 0.3s;
+            }
+
+            .navbar-nav .nav-link:hover, .navbar-nav .nav-link.active {
+                color: #f8d210 !important;
+                font-weight: bold;
+            }
+
+            .profile-dropdown {
+                position: absolute;
+                right: 10px;
+            }
+
+            .dark-mode .navbar {
+                background-color: #222 !important;
+            }
+
+            .dark-mode .dropdown-menu {
+                background-color: #222;
+                color: white;
+            }
+
+            .dark-mode .dropdown-item {
+                color: white;
+            }
+
+            .dark-mode .dropdown-item:hover {
+                background-color: #333;
+            }
+        </style>
+    </head>
+    <body>
+
+    <div class="container mt-5">
+        <div class="card shadow-lg p-4">
+            {% if request.user.is_student %}
+            <h2 class="text-center text-primary">Upload Certification</h2>
+            <hr>
+
+            <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-primary w-100">Upload Certification</button>
+            </form>
+            <hr>
+            {% endif %}
+            <h3 class="mt-4 text-center text-success">
+                {% if is_admin %}All Certifications
+                {% elif is_teacher %}Student Certifications
+                {% else %}Your Certifications{% endif %}
+            </h3>
+            
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped mt-3">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Title</th>
+                            {% if is_admin or is_teacher %}
+                            <th>Student</th>
+                            {% endif %}
+                            <th>File</th>
+                            <th>Issued Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for cert in certifications %}
+                        <tr>
+                            <td>{{ cert.title }}</td>
+                            {% if is_admin or is_teacher %}
+                            <td>{{ cert.student.get_full_name|default:cert.student.username }}</td>
+                            {% endif %}
+                            <td>
+                                <a href="{{ cert.file.url }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-eye"></i> View
+                                </a>
+                                <a href="{{ cert.file.url }}" download class="btn btn-sm btn-outline-secondary">
+                                    <i class="bi bi-download"></i> Download
+                                </a>
+                            </td>
+                            <td>{{ cert.issued_date|date:"M d, Y" }}</td>
+                            <td>
+                                {% if is_admin or request.user == cert.student %}
+                                <a href="{% url 'next_gen_sms:delete_certification' cert.id %}" class="btn btn-danger btn-sm">
+                                    <i class="bi bi-trash"></i> Delete
+                                </a>
+                                {% else %}
+                                <span class="text-muted">No actions</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="{% if is_admin or is_teacher %}5{% else %}4{% endif %}" class="text-center text-muted">
+                                No certifications found
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        (function () {
+            'use strict';
+            var forms = document.querySelectorAll('.needs-validation');
+            Array.prototype.slice.call(forms).forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        })();
+    </script>
+
+    </body>
+    </html>
+{% endblock %}

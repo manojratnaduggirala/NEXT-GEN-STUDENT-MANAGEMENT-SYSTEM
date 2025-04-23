@@ -12,25 +12,25 @@
                     <a class="nav-link" href="{% url 'dashboard' %}">Dashboard <span class="sr-only">(current)</span></a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Students</a>
+                    <a class="nav-link" href="{% url 'next_gen_sms:student_dashboard' %}">Students</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Courses</a>
+                    <a class="nav-link" href="{% url 'next_gen_sms:course_list' %}">Courses</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Attendance</a>
+                    <a class="nav-link" href="{% url 'next_gen_sms:attendance_overview' %}">Attendance</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Exams</a>
+                    <a class="nav-link" href="{% url 'next_gen_sms:marks_overview' %}">Exams</a>
                 </li>
                  <li class="nav-item">
-                    <a class="nav-link" href="#">Tasks</a>
+                    <a class="nav-link" href="{% url 'next_gen_sms:manage_tasks' %}">Tasks</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Events</a>
+                    <a class="nav-link" href="{% url 'next_gen_sms:events_list' %}">Events</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Certifications</a>
+                    <a class="nav-link" href="{% url 'next_gen_sms:certifications_view' %}">Certifications</a>
                 </li>
                 </ul>
              <ul class="navbar-nav ml-auto">
@@ -92,55 +92,110 @@
                     <div class="card shadow-lg p-4 rounded-lg">
                         <div class="row">
                             <div class="col-md-4 text-center">
-                                <img src="{{ user.profile_image.url|default:'/static/images/default-avatar.png' }}"
+                                <img src="{% if user.profile.profile_image and user.profile.profile_image.url %}{{ user.profile.profile_image.url }}{% else %}/static/images/default-avatar.png{% endif %}"
                                      class="rounded-circle img-fluid border"
                                      style="width: 150px; height: 150px; object-fit: cover;"
                                      alt="Profile Picture">
-                                <h4 class="mt-3">{{ user.username }}</h4>
+                                <h4 class="mt-3">
+                                    {% if user.profile.first_name or user.profile.last_name %}
+                                        {{ user.profile.first_name }} {{ user.profile.last_name }}
+                                    {% else %}
+                                        {{ user.username }}
+                                    {% endif %}
+                                </h4>
                                 <p class="text-muted">{{ user.role|title }}</p>
                             </div>
                             <div class="col-md-8">
-                                <h3 class="text-primary">👤 User Profile</h3>
+                                <h3 class="text-primary"> User Profile</h3>
                                 <hr>
                                 <div class="row">
                                     <div class="col-sm-6">
-                                        <p><strong>📧 Email:</strong> {{ user.email }}</p>
-                                        <p><strong>📍 Location:</strong> {{ user.location|default:'Not provided' }}</p>
+                                        <p><strong> Email:</strong> {{ user.email }}</p>
+                                        <p><strong> Name:</strong> 
+                                            {% if user.profile.first_name or user.profile.last_name %}
+                                                {{ user.profile.first_name }} {{ user.profile.last_name }}
+                                            {% else %}
+                                                Not provided
+                                            {% endif %}
+                                        </p>
+                                        <p><strong> Location:</strong> {{ user.profile.location|default:'Not provided' }}</p>
+                                        <p><strong> Phone:</strong> {{ user.profile.phone_number|default:'Not provided' }}</p>
+                                        <p><strong> Bio:</strong> {{ user.profile.bio|default:'Not provided' }}</p>
                                     </div>
                                     <div class="col-sm-6">
-                                        <p><strong>📅 Joined:</strong> {{ user.date_joined|date:"F d, Y" }}</p>
+                                        <p><strong> Joined:</strong> {{ user.date_joined|date:"F d, Y" }}</p>
                                         <p><strong>🔗 Social Links:</strong>
-                                            <a href="{{ user.linkedin|default:'#' }}" target="_blank">LinkedIn</a> |
-                                            <a href="{{ user.github|default:'#' }}" target="_blank">GitHub</a>
+                                            <a href="{{ user.profile.linkedin_url|default:'#' }}" target="_blank">LinkedIn</a> |
+                                            <a href="{{ user.profile.github_url|default:'#' }}" target="_blank">GitHub</a>
                                         </p>
+                                        <p><strong> Department:</strong> {{ user.profile.department|default:'Not provided' }}</p>
+                                        <p><strong> Skills:</strong> {{ user.profile.skills|default:'Not provided' }}</p>
                                     </div>
                                 </div>
                                 <div class="mt-3">
-                                    <a href="{% url 'edit_profile' %}" class="btn btn-warning btn-sm">✏️ Edit Profile</a>
-                                    <a href="{% url 'settings' %}" class="btn btn-secondary btn-sm">⚙️ Settings</a>
+                                    <a href="{% url 'next_gen_sms:update_profile' %}" class="btn btn-warning btn-sm">✏️ Edit Profile</a>
+                                    <a href="{% url 'next_gen_sms:settings' %}" class="btn btn-secondary btn-sm">⚙️ Settings</a>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    {% load profile_tags %}
                     <div class="card shadow-lg mt-4 p-4 rounded-lg">
-                        <h3 class="text-success">🏆 Achievements & Activities</h3>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h3 class="text-success"> Achievements & Activities</h3>
+                            <button class="btn btn-sm btn-outline-primary" onclick="toggleEdit('achievements')">Edit</button>
+                        </div>
                         <hr>
-                        <ul class="list-group">
-                            <li class="list-group-item">✅ Completed <strong>Cybersecurity Internship</strong> at TCS</li>
-                            <li class="list-group-item">📜 Earned <strong>Google Ads Certification</strong></li>
-                            <li class="list-group-item">💡 Developed <strong>Student Management System</strong> using Django</li>
-                            <li class="list-group-item">🌍 Active <strong>NSS Volunteer</strong></li>
-                        </ul>
+                        <div id="achievements-view">
+                            <ul class="list-group">
+                                {% for achievement in user.profile.achievements|split_lines %}
+                                    <li class="list-group-item"> {{ achievement }}</li>
+                                {% empty %}
+                                    <li class="list-group-item">No achievements yet</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <div id="achievements-edit" style="display:none;">
+                            <form method="post" action="{% url 'next_gen_sms:update_profile_section' 'achievements' %}">
+                                {% csrf_token %}
+                                <textarea name="content" class="form-control mb-2" rows="5">{{ user.profile.achievements }}</textarea>
+                                <button type="submit" class="btn btn-primary btn-sm">Save</button>
+                                <button type="button" class="btn btn-secondary btn-sm" onclick="toggleEdit('achievements')">Cancel</button>
+                            </form>
+                        </div>
                     </div>
                     <div class="card shadow-lg mt-4 p-4 rounded-lg">
-                        <h3 class="text-info">📅 Recent Activities</h3>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h3 class="text-info"> Recent Activities</h3>
+                            <button class="btn btn-sm btn-outline-primary" onclick="toggleEdit('activities')">Edit</button>
+                        </div>
                         <hr>
-                        <ul class="list-group">
-                            <li class="list-group-item">📝 Published a blog on <strong>SEO Strategies</strong></li>
-                            <li class="list-group-item">🔧 Built a <strong>Power BI Dashboard</strong> for data visualization</li>
-                            <li class="list-group-item">🎤 Hosted a <strong>Digital Marketing Webinar</strong></li>
-                        </ul>
+                        <div id="activities-view">
+                            <ul class="list-group">
+                                {% for activity in user.profile.activities|split_lines %}
+                                    <li class="list-group-item"> {{ activity }}</li>
+                                {% empty %}
+                                    <li class="list-group-item">No recent activities</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <div id="activities-edit" style="display:none;">
+                            <form method="post" action="{% url 'next_gen_sms:update_profile_section' 'activities' %}">
+                                {% csrf_token %}
+                                <textarea name="content" class="form-control mb-2" rows="5">{{ user.profile.activities }}</textarea>
+                                <button type="submit" class="btn btn-primary btn-sm">Save</button>
+                                <button type="button" class="btn btn-secondary btn-sm" onclick="toggleEdit('activities')">Cancel</button>
+                            </form>
+                        </div>
                     </div>
+                    <script>
+                        function toggleEdit(section) {
+                            document.getElementById(`${section}-view`).style.display = 
+                                document.getElementById(`${section}-view`).style.display === 'none' ? 'block' : 'none';
+                            document.getElementById(`${section}-edit`).style.display = 
+                                document.getElementById(`${section}-edit`).style.display === 'none' ? 'block' : 'none';
+                        }
+                    </script>
                 </div>
             </div>
         </div>

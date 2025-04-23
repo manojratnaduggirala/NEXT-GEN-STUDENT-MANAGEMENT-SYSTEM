@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% block navbar %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{% url 'next_gen_sms:course_list' %}">Course Details</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'next_gen_sms:student_dashboard' %}">Students</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'next_gen_sms:course_list' %}">Courses</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'next_gen_sms:attendance_overview' %}">Attendance</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'next_gen_sms:marks_overview' %}">Exams</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'next_gen_sms:manage_tasks' %}">Tasks</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'next_gen_sms:events_list' %}">Events</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'next_gen_sms:certifications_view' %}">Certifications</a>
+                </li>
+            </ul>
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <div class="d-flex justify-content-between align-items-center">
+                <h3>{{ course.name }} ({{ course.code }})</h3>
+                <div>
+                    <a href="{% url 'next_gen_sms:edit_course' course.id %}" class="btn btn-warning btn-sm">Edit</a>
+                    <a href="{% url 'next_gen_sms:course_list' %}" class="btn btn-secondary btn-sm">Back to List</a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            {% if course.youtube_url %}
+            <div class="ratio ratio-16x9 mb-4">
+                <iframe src="{{ course.youtube_url }}" 
+                        title="{{ course.name }} video" 
+                        allowfullscreen></iframe>
+            </div>
+            {% endif %}
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Course Information</h5>
+                    <p><strong>Instructor:</strong> {{ course.instructor }}</p>
+                    <p><strong>Credits:</strong> {{ course.credits }}</p>
+                    <p><strong>Schedule:</strong> {{ course.schedule }}</p>
+                    <p><strong>Room:</strong> {{ course.room }}</p>
+                </div>
+                <div class="col-md-6">
+                    <h5>Description</h5>
+                    <p>{{ course.description }}</p>
+                </div>
+            </div>
+            
+            <hr>
+            
+            <h5>Enrolled Students</h5>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Student ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in course.students.all %}
+                        <tr>
+                            <td>{{ student.student_id }}</td>
+                            <td>{{ student.get_full_name }}</td>
+                            <td>{{ student.email }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="3" class="text-center">No students enrolled</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

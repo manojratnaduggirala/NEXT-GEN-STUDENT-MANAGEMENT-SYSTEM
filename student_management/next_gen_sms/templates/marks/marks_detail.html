@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow-lg">
+        <div class="card-body">
+            <h3 class="card-title text-center mb-4">Marks Details</h3>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"><strong>Student Name:</strong> {{ mark.student_name }}</li>
+                <li class="list-group-item"><strong>Subject:</strong> {{ mark.subject }}</li>
+                <li class="list-group-item"><strong>Marks Obtained:</strong> {{ mark.marks_obtained }}</li>
+            </ul>
+            <div class="text-center mt-4">
+                <a href="{% url 'marks_update' mark.id %}" class="btn btn-primary btn-lg">Edit</a>
+                <a href="{% url 'marks_delete' mark.id %}" class="btn btn-danger btn-lg ms-2">Delete</a>
+                <a href="{% url 'next_gen_sms:marks_overview' %}" class="btn btn-secondary btn-lg ms-2">Back to List</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

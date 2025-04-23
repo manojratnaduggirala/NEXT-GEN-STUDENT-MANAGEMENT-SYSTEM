@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-4">
+    <h2>Attendance Records Overview</h2>
+    {% if request.user.is_admin %}
+    <a href="{% url 'next_gen_sms:attendance_create' %}" class="btn btn-primary mb-3">Add Attendance Record</a>
+    {% endif %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Student</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for attendance in attendance_records %}
+            <tr>
+                <td>{{ attendance.id }}</td>
+                <td>{{ attendance.student }}</td>
+                <td>{{ attendance.date }}</td>
+                <td>{% if attendance.status %}Present{% else %}Absent{% endif %}</td>
+                <td>
+                    <a href="{% url 'next_gen_sms:attendance_detail' attendance.id %}" class="btn btn-info btn-sm">View</a>
+                    {% if request.user.is_admin %}
+                    <a href="{% url 'next_gen_sms:attendance_edit' attendance.id %}" class="btn btn-warning btn-sm">Edit</a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5">No attendance records found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

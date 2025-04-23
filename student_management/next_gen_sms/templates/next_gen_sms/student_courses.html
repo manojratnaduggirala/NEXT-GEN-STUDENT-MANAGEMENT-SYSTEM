@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Available Courses</h2>
+    {% if all_courses %}
+        <div class="list-group">
+            {% for course in all_courses %}
+                <div class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5>{{ course.name }}</h5>
+                        <p>{{ course.description|truncatewords:30 }}</p>
+                    </div>
+                    <div>
+                        {% if course.id in enrolled_course_ids %}
+                            <span class="badge bg-success">Enrolled</span>
+                        {% else %}
+                            <a href="{% url 'next_gen_sms:enroll_course' course.id %}" class="btn btn-primary">Enroll</a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No courses available at the moment.</p>
+    {% endif %}
+</div>
+{% endblock %}

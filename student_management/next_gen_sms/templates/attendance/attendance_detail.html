@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-4">
+    <h2>Attendance Record Details</h2>
+    <div class="card">
+        <div class="card-body">
+            <p><strong>ID:</strong> {{ attendance.id }}</p>
+            <p><strong>Date:</strong> {{ attendance.date }}</p>
+            <p><strong>Student:</strong> {{ attendance.student }}</p>
+            <p><strong>Status:</strong> {{ attendance.status }}</p>
+            <p><strong>Notes:</strong> {{ attendance.notes }}</p>
+            <a href="{% url 'next_gen_sms:attendance_edit' pk=attendance.id %}" class="btn btn-primary">Edit</a>
+            <a href="{% url 'next_gen_sms:attendance_overview' %}" class="btn btn-secondary">Back to Overview</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

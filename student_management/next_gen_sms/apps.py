@@ -5,7 +5,8 @@ class NextGenSmsConfig(AppConfig):
     name = 'next_gen_sms'
 
     def ready(self):
-        try:
-            import next_gen_sms.signals 
-        except ImportError:
-            pass  
+        import next_gen_sms.signals  # Ensure signals are imported
+
+        
+
+

@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+
+{% block navbar %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+    <div class="container-fluid">
+        <a class="navbar-brand fw-bold fs-4" href="#">📋 Manage Tasks</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item"><a class="nav-link" href="{% url 'dashboard' %}">🏠 Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'next_gen_sms:student_dashboard' %}">👩‍🎓 Students</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'next_gen_sms:course_list' %}">📚 Courses</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'next_gen_sms:attendance_overview' %}">📅 Attendance</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'next_gen_sms:marks_overview' %}">📝 Exams</a></li>
+                <li class="nav-item"><a class="nav-link active" href="{% url 'next_gen_sms:manage_tasks' %}">🗂️ Tasks</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'next_gen_sms:events_list' %}">🎉 Events</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'next_gen_sms:certifications_view' %}">🎓 Certifications</a></li>
+            </ul>
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link btn btn-light text-danger fw-semibold px-3 py-1 rounded-pill shadow-sm" href="{% url 'logout' %}">
+                        🚪 Logout
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="card border-0 shadow rounded-4 p-4">
+        <h2 class="text-center text-primary mb-4 fw-bold">📌 Manage Your Daily Tasks</h2>
+
+        <!-- Alert Section (Optional for Success or Error messages) -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Task Form -->
+        <form method="POST" class="needs-validation" novalidate>
+            {% csrf_token %}
+            <div class="mb-3">
+                <label class="form-label fw-bold text-primary">📝 Task Description</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-primary text-white"><i class="bi bi-card-text"></i></span>
+                    <textarea name="task_description" class="form-control shadow-sm" placeholder="Enter your task..." rows="2" required></textarea>
+                </div>
+                <div class="invalid-feedback">
+                    Please provide a task description.
+                </div>
+            </div>
+            <button type="submit" class="btn btn-success w-100 fw-bold shadow-sm">
+                ➕ Add Task
+            </button>
+        </form>
+
+        <!-- Task List -->
+        <h4 class="mt-5 mb-3 text-secondary">📝 Your Tasks</h4>
+        {% if tasks %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle text-center">
+                <thead class="table-primary">
+                    <tr>
+                        <th scope="col">📋 Task</th>
+                        <th scope="col">⏳ Status</th>
+                        <th scope="col">⚙️ Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for task in tasks %}
+                    <tr>
+                        <td class="text-start">{{ task.task_description }}</td>
+                        <td>
+                            {% if task.completed %}
+                                <span class="badge bg-success">✅ Completed</span>
+                            {% else %}
+                                <span class="badge bg-warning text-dark">❌ Pending</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'next_gen_sms:toggle_task' task.id %}" class="btn btn-outline-primary btn-sm rounded-pill">
+                                {% if task.completed %}🔁 Mark Pending{% else %}✅ Mark Done{% endif %}
+                            </a>
+                            <form action="{% url 'next_gen_sms:delete_task' task.id %}" method="post" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill">🗑️ Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center mt-4 text-muted">
+            <p>📭 No tasks yet. Add your first task above!</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Bootstrap Script -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Bootstrap form validation
+    (() => {
+        'use strict';
+        const forms = document.querySelectorAll('.needs-validation');
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', e => {
+                if (!form.checkValidity()) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    })();
+</script>
+{% endblock %}

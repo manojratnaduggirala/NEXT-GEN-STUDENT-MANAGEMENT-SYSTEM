@@ -1,194 +1,82 @@
 {% extends 'base.html' %}
 
-{% block navbar %}
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <a class="navbar-brand" href="#">Update Profile</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
-                <li class="nav-item active">
-                    <a class="nav-link" href="{% url 'dashboard' %}">Dashboard <span class="sr-only">(current)</span></a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Students</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Courses</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Attendance</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Exams</a>
-                </li>
-                 <li class="nav-item">
-                    <a class="nav-link" href="#">Tasks</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Events</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Certifications</a>
-                </li>
-                </ul>
-             <ul class="navbar-nav ml-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'logout' %}">Logout</a>
-                </li>
-            </ul>
-        </div>
-    </nav>
-{% endblock %}
-
 {% block content %}
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Upload Certification</title>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
-        <style>
-            body {
-                transition: background-color 0.3s, color 0.3s;
-            }
-            .dark-mode {
-                background-color: #121212;
-                color: white;
-            }
-            .navbar-nav .nav-link {
-                transition: 0.3s;
-            }
-            .navbar-nav .nav-link:hover, .navbar-nav .nav-link.active {
-                color: #f8d210 !important;
-                font-weight: bold;
-            }
-            .profile-dropdown {
-                position: absolute;
-                right: 10px;
-            }
-            .dark-mode .navbar {
-                background-color: #222 !important;
-            }
-            .dark-mode .dropdown-menu {
-                background-color: #222;
-                color: white;
-            }
-            .dark-mode .dropdown-item {
-                color: white;
-            }
-            .dark-mode .dropdown-item:hover {
-                background-color: #333;
-            }
-            #drop-area {
-                border: 2px dashed #ccc;
-                padding: 20px;
-                text-align: center;
-            }
-            #drop-area.hover {
-                border-color: #007bff;
-            }
-        </style>
-    </head>
-    <body>
-
-    <div class="container mt-4">
-        <div class="card shadow-lg p-4">
-            <h2 class="text-center text-success">🏆 Upload Certification</h2>
-
-            <div class="mb-3 text-center">
-                <div id="drop-area" class="border rounded p-4 d-flex flex-column align-items-center bg-light">
-                    <p class="text-muted">📂 Drag & Drop to Upload or Click to Select</p>
-                    <input type="file" id="fileInput" class="d-none">
-                    <button id="browseBtn" class="btn btn-outline-success">Choose File</button>
-                    <img id="preview" src="https://via.placeholder.com/200" class="img-thumbnail mt-3 d-none" width="200">
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white">
+                    <h4>Edit Profile</h4>
                 </div>
-            </div>
-
-            <form method="POST" enctype="multipart/form-data" class="mt-3">
-                {% csrf_token %}
-                <div class="mb-3">
-                    <label class="form-label"><strong>Certification Title</strong></label>
-                    {{ form.title }}
-                </div>
-                <div class="mb-3">
-                    <label class="form-label"><strong>Issued Date</strong></label>
-                    {{ form.issued_date }}
-                </div>
-                <div class="mb-3">
-                    <label class="form-label"><strong>Upload Certificate</strong></label>
-                    {{ form.file }}
-                </div>
-                <button type="submit" class="btn btn-success w-100">📤 Upload</button>
-            </form>
-        </div>
-
-        <div class="mt-5">
-            <h3 class="text-primary text-center">🎓 Your Certifications</h3>
-            <div class="row mt-3">
-                {% for certification in certifications %}
-                    <div class="col-md-4">
-                        <div class="card shadow-sm p-3 mb-4">
-                            <img src="{{ certification.file.url }}" class="card-img-top" alt="{{ certification.title }}">
-                            <div class="card-body">
-                                <h5 class="card-title">{{ certification.title }}</h5>
-                                <p class="card-text text-muted">📅 Issued: {{ certification.issued_date }}</p>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label">Username</label>
+                            <input type="text" class="form-control" value="{{ user.username }}" disabled>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">First Name</label>
+                                {{ form.first_name }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Last Name</label>
+                                {{ form.last_name }}
                             </div>
                         </div>
-                    </div>
-                {% empty %}
-                    <p class="text-center text-muted">No certifications uploaded yet.</p>
-                {% endfor %}
+                        <div class="mb-3">
+                            <label class="form-label">Profile Image</label>
+                            {% if user.profile.profile_image %}
+                                <img src="{{ user.profile.profile_image.url }}" class="img-thumbnail mb-2" style="max-width: 200px; display: block;">
+                            {% endif %}
+                            {{ form.profile_image }}
+                            <small class="text-muted">Upload a new image to replace current one</small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Location</label>
+                            {{ form.location }}
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Phone Number</label>
+                            {{ form.phone_number }}
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Bio</label>
+                            {{ form.bio }}
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Department</label>
+                            {{ form.department }}
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Skills</label>
+                            {{ form.skills }}
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">LinkedIn URL</label>
+                            {{ form.linkedin_url }}
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">GitHub URL</label>
+                            {{ form.github_url }}
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Achievements (one per line)</label>
+                            <textarea name="achievements" class="form-control" rows="3">{% if form.achievements.value %}{{ form.achievements.value }}{% endif %}</textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Activities (one per line)</label>
+                            <textarea name="activities" class="form-control" rows="3">{% if form.activities.value %}{{ form.activities.value }}{% endif %}</textarea>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                            <a href="{% url 'next_gen_sms:profile' %}" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-    <script>
-        let dropArea = document.getElementById("drop-area");
-        let fileInput = document.getElementById("fileInput");
-        let browseBtn = document.getElementById("browseBtn");
-        let preview = document.getElementById("preview");
-
-        browseBtn.addEventListener("click", () => fileInput.click());
-
-        dropArea.addEventListener("dragover", (e) => {
-            e.preventDefault();
-            dropArea.classList.add("border-primary");
-        });
-
-        dropArea.addEventListener("dragleave", () => {
-            dropArea.classList.remove("border-primary");
-        });
-
-        dropArea.addEventListener("drop", (e) => {
-            e.preventDefault();
-            dropArea.classList.remove("border-primary");
-            let file = e.dataTransfer.files[0];
-            handleFile(file);
-        });
-
-        fileInput.addEventListener("change", (event) => {
-            let file = event.target.files[0];
-            handleFile(file);
-        });
-
-        function handleFile(file) {
-            if (file) {
-                let reader = new FileReader();
-                reader.onload = function (e) {
-                    preview.src = e.target.result;
-                    preview.classList.remove("d-none");
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-    </script>
-
-    </body>
-    </html>
+</div>
 {% endblock %}

@@ -3,43 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Next-Gen Student Management System</title>
-    
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <meta name="description" content="Next-Gen Student Management System | Manage students, courses, and events efficiently.">
+    <title>Next-Gen SMS | Student Dashboard & Course Management</title>
+
+    <!-- Bootstrap 5 CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css">
 
     <style>
-        body {
-            transition: background-color 0.3s, color 0.3s;
-        }
-        .dark-mode {
-            background-color: #121212;
-            color: white;
-        }
-        .navbar-nav .nav-link {
-            transition: 0.3s;
-        }
+        body { transition: background-color 0.3s, color 0.3s; }
+        .dark-mode { background-color: #121212; color: white; }
+        .navbar-nav .nav-link { transition: 0.3s; }
         .navbar-nav .nav-link:hover, .navbar-nav .nav-link.active {
             color: #f8d210 !important;
             font-weight: bold;
         }
-        .profile-dropdown {
-            position: absolute;
-            right: 10px;
-        }
-        .dark-mode .navbar {
-            background-color: #222 !important;
-        }
-        .dark-mode .dropdown-menu {
-            background-color: #222;
-            color: white;
-        }
-        .dark-mode .dropdown-item {
-            color: white;
-        }
-        .dark-mode .dropdown-item:hover {
-            background-color: #333;
-        }
+        .profile-dropdown { position: absolute; right: 10px; }
+        .dark-mode .navbar { background-color: #222 !important; }
+        .dark-mode .dropdown-menu { background-color: #222; color: white; }
+        .dark-mode .dropdown-item { color: white; }
+        .dark-mode .dropdown-item:hover { background-color: #333; }
     </style>
 </head>
 <body>
@@ -47,41 +30,64 @@
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
-        <a class="navbar-brand" href="{% url 'dashboard' %}">Next-Gen Student Management System</a>
+        <a class="navbar-brand" href="{% url 'next_gen_sms:dashboard' %}">Next-Gen SMS</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
-                <li class="nav-item"><a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'manage_tasks' %}">Tasks</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'events_list' %}">Events</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'marks_overview' %}">Marks</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'attendance_overview' %}">Attendance</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'upload_certification' %}">Certifications</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'settings' %}">Settings</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'next_gen_sms:dashboard' %}">Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'next_gen_sms:manage_tasks' %}">Tasks</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'next_gen_sms:events_list' %}">Events</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'next_gen_sms:marks_overview' %}">Marks</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'next_gen_sms:attendance_overview' %}">Attendance</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'next_gen_sms:upload_certification' %}">Certifications</a></li>
+
+                <!-- Courses Dropdown -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="{% url 'next_gen_sms:manage_courses' %}" id="coursesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        📖 Courses
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="coursesDropdown" data-bs-auto-close="outside">
+                        <li><a class="dropdown-item" href="{% if user.is_admin %}{% url 'next_gen_sms:manage_courses' %}{% else %}{% url 'next_gen_sms:student_courses' %}{% endif %}">Course List</a></li>
+                        {% if user.is_admin or user.is_teacher %}
+                        <li><a class="dropdown-item" href="{% url 'next_gen_sms:add_course' %}">Add Courses</a></li>
+                        {% endif %}
+                    </ul>
+                </li>
+
+                <!-- Notification Bell -->
+                <li class="nav-item">
+                    <a class="nav-link position-relative" href="{% url 'next_gen_sms:notifications' %}">
+                        <i class="bi bi-bell-fill"></i>
+                        {% if unread_notifications_count > 0 %}
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                            {{ unread_notifications_count }}
+                        </span>
+                        {% endif %}
+                    </a>
+                </li>
 
                 <!-- Profile Dropdown -->
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <a class="nav-link dropdown-toggle" href="{% url 'next_gen_sms:profile' %}" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="bi bi-person-circle"></i> Profile
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-                        <li><a class="dropdown-item" href="{% url 'profile' %}">View Profile</a></li>
-                        <li><a class="dropdown-item" href="{% url 'settings' %}">Settings</a></li>
+                        <li><a class="dropdown-item" href="{% url 'next_gen_sms:profile' %}">View Profile</a></li>
+                        <li><a class="dropdown-item" href="{% url 'next_gen_sms:settings' %}">Settings</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li>
-                            <form action="{% url 'logout' %}" method="post">
-                                {% csrf_token %}
-                                <button type="submit" class="dropdown-item text-danger">Logout</button>
-                            </form>
+                            <button class="dropdown-item text-danger" id="logoutBtn">Logout</button>
                         </li>
                     </ul>
                 </li>
 
                 <!-- Dark Mode Toggle -->
                 <li class="nav-item">
-                    <button class="btn btn-outline-light ms-2" id="darkModeToggle"><i class="bi bi-moon-stars-fill"></i></button>
+                    <button class="btn btn-outline-light ms-2" id="darkModeToggle" aria-label="Toggle Dark Mode">
+                        <i class="bi bi-moon-stars-fill"></i>
+                    </button>
                 </li>
             </ul>
         </div>
@@ -96,33 +102,45 @@
                 Attendance: {% if attendance_percentage is not None %} 
                     {{ attendance_percentage }}% 
                 {% else %} 
-                    Data not available 
+                     Data will get updated soon.
                 {% endif %}
             </h3>
         </div>
         <div class="col-md-6 text-end">
-            <h5 class="text-secondary">📅 {{ today_date }}</h5>
+            <h5 class="text-secondary"> {{ today_date }}</h5>
         </div>
     </div>
 
-    <!-- Messages -->
-    {% if messages %}
-        {% for message in messages %}
-            <div class="alert alert-{{ message.tags }} alert-dismissible fade show mt-3" role="alert">
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        {% endfor %}
-    {% endif %}
+    <!-- Toast Notifications -->
+    <div class="position-fixed top-0 end-0 p-3" style="z-index: 1050;">
+        <div id="toastContainer">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="toast align-items-center text-bg-{{ message.tags }} border-0 show" role="alert" aria-live="assertive" aria-atomic="true">
+                        <div class="d-flex">
+                            <div class="toast-body">{{ message }}</div>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
 
-    {% block content %} {% endblock %}
+    {% block content %}{% endblock %}
 </div>
 
 <!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+ <!-- Bootstrap 5 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
+<!-- Bootstrap Icons (Optional) -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js" defer></script>
+
+<!-- Custom Script -->
 <script>
-    // Dark Mode Toggle with Local Storage
     document.addEventListener("DOMContentLoaded", () => {
         const darkModeToggle = document.getElementById("darkModeToggle");
         const body = document.body;
@@ -139,24 +157,31 @@
             darkModeToggle.innerHTML = '<i class="bi bi-moon-stars-fill"></i>';
         };
 
-        if (localStorage.getItem("darkMode") === "enabled") {
-            enableDarkMode();
-        }
+        if (localStorage.getItem("darkMode") === "enabled") enableDarkMode();
 
         darkModeToggle.addEventListener("click", () => {
-            if (body.classList.contains("dark-mode")) {
-                disableDarkMode();
-            } else {
-                enableDarkMode();
-            }
+            body.classList.contains("dark-mode") ? disableDarkMode() : enableDarkMode();
         });
 
-        // Highlight Active Navbar Link
+        // Active nav link
         document.querySelectorAll('.nav-link').forEach(link => {
             if (link.href === window.location.href) {
                 link.classList.add('active');
             }
         });
+
+        // Logout logic
+        const logoutBtn = document.getElementById("logoutBtn");
+        if (logoutBtn) {
+            logoutBtn.addEventListener("click", () => {
+                    fetch("{% url 'next_gen_sms:logout' %}", {
+                    method: "POST",
+                    headers: { "X-CSRFToken": "{{ csrf_token }}" }
+                }).then(() => {
+                    window.location.href = "{% url 'next_gen_sms:login' %}";
+                });
+            });
+        }
     });
 </script>
 

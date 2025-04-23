@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+        <h2 class="mb-2 mb-md-0">Welcome, <span class="text-primary">{{ user.username }}</span>! </h2>
+        <h5 id="datetime" class="text-muted"></h5>
+    </div>
+
+    <div class="row g-4">
+        <!-- Quick Actions -->
+        <div class="col-md-4">
+            <div class="card shadow h-100">
+                <div class="card-header bg-info text-white text-center fw-semibold"> Quick Actions</div>
+                <div class="card-body d-flex flex-column gap-2">
+                    <a href="{% url 'next_gen_sms:attendance_create' %}" class="btn btn-outline-success btn-lg w-100">📅 Take Attendance</a>
+                    <a href="{% url 'next_gen_sms:marks_create' %}" class="btn btn-outline-primary btn-lg w-100">📝 Enter Marks</a>
+                    <a href="{% url 'next_gen_sms:manage_courses' %}" class="btn btn-outline-warning btn-lg w-100">📚 Manage Courses</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="col-md-8">
+            <div class="card shadow h-100">
+                <div class="card-header bg-secondary text-white text-center fw-semibold">📢 Recent Activity</div>
+                <div class="card-body">
+                    {% if recent_activities %}
+                        <ul class="list-group">
+                            {% for activity in recent_activities %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    {{ activity.description }}
+                                    <span class="badge bg-primary">{{ activity.timestamp|date:"M d, H:i" }}</span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-center text-muted">No recent activity yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Student Management Section -->
+    <div class="row mt-4 g-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white text-center fw-semibold"> Student Management</div>
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Student Certificates -->
+                        <div class="col-md-6">
+                            <h5 class="text-center mb-3"> Student Certificates</h5>
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Student</th>
+                                            <th>Certificates</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for student in students %}
+                                        <tr>
+                                            <td>{{ student.get_full_name }}</td>
+                                            <td>{{ student.certification_set.count }}</td>
+                                            <td>
+                                                <a href="{% url 'next_gen_sms:certifications_view' %}?student_id={{ student.id }}" 
+                                                   class="btn btn-sm btn-info">
+                                                    View
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Student Profiles -->
+                        <div class="col-md-6">
+                            <h5 class="text-center mb-3"> Student Profiles</h5>
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Student</th>
+                                            <th>Courses</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for student in students %}
+                                        <tr>
+                                            <td>{{ student.get_full_name }}</td>
+                                            <td>{{ student.course_set.count }}</td>
+                                            <td>
+                                                <a href="{% url 'next_gen_sms:profile' student.id %}" 
+                                                   class="btn btn-sm btn-primary">
+                                                    View Profile
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script>
+    function updateDateTime() {
+        document.getElementById("datetime").innerText = new Date().toLocaleString();
+    }
+    updateDateTime();
+    setInterval(updateDateTime, 1000);
+</script>
+{% endblock %}

@@ -1,0 +1,1 @@
+WARNING 2025-04-15 11:57:21,863 log 23440 3456 Forbidden (CSRF token from the 'X-Csrftoken' HTTP header incorrect.): /logout/

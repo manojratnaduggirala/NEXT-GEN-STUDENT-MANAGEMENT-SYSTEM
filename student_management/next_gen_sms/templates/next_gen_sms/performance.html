@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Website Performance Dashboard</h2>
+    
+    {% if metrics.error %}
+        <div class="alert alert-danger">
+            Error fetching performance data: {{ metrics.error }}
+        </div>
+    {% else %}
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h4>Performance Score: {{ metrics.performance_score|floatformat:0 }}/100</h4>
+            </div>
+            <div class="card-body">
+                <div class="progress mb-3">
+                    <div class="progress-bar 
+                        {% if metrics.performance_score > 89 %}bg-success
+                        {% elif metrics.performance_score > 49 %}bg-warning
+                        {% else %}bg-danger{% endif %}" 
+                        role="progressbar" 
+                        style="width: {{ metrics.performance_score }}%"
+                        aria-valuenow="{{ metrics.performance_score }}" 
+                        aria-valuemin="0" 
+                        aria-valuemax="100">
+                    </div>
+                </div>
+                
+                <h5>Key Metrics:</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h6>First Contentful Paint</h6>
+                                <p class="display-6">{{ metrics.metrics.first-contentful-paint.displayValue }}</p>
+                                <small class="text-muted">Time until first content renders</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h6>Speed Index</h6>
+                                <p class="display-6">{{ metrics.metrics.speed-index.displayValue }}</p>
+                                <small class="text-muted">How quickly content displays</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h6>Time to Interactive</h6>
+                                <p class="display-6">{{ metrics.metrics.interactive.displayValue }}</p>
+                                <small class="text-muted">When page becomes fully interactive</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
